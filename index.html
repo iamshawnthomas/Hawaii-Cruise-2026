@@ -20,146 +20,92 @@
         
         /* Calendar Grid */
         #calendar { flex: 1; min-width: 320px; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-        .day-card { background: white; border: 1px solid #ddd; padding: 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .day-card { background: white; border: 1px solid #ddd; padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.2s; position: relative; }
         .day-card:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-color: var(--secondary); }
         .day-card.sea-day { background-color: var(--sea); }
         .day-card.port-day { background-color: var(--port); }
-        .date-label { font-weight: bold; font-size: 0.9rem; color: var(--primary); }
-        .loc-label { display: block; margin-top: 5px; font-size: 0.85rem; }
+        .date-label { font-weight: bold; font-size: 0.95rem; color: var(--primary); display: block; }
+        .times-label { font-size: 0.75rem; color: #666; font-weight: bold; margin-bottom: 5px; display: block; }
+        .loc-label { display: block; font-size: 0.85rem; }
 
         /* Detail Pane */
         #details { flex: 1.5; min-width: 350px; background: white; padding: 25px; border-radius: 8px; border: 1px solid #ddd; position: sticky; top: 20px; height: fit-content; line-height: 1.6; }
-        #det-act { font-size: 0.95rem; }
         
         /* Interactive Elements */
-        .map-trigger { color: var(--primary); cursor: pointer; text-decoration: underline; display: block; margin-top: 15px; font-weight: bold; font-size: 1.1rem; }
+        .map-trigger { color: var(--primary); cursor: pointer; text-decoration: underline; display: block; margin-top: 12px; font-weight: bold; font-size: 1.1rem; }
         .map-trigger:hover { color: var(--secondary); }
-        .history-section { background: #f9f9f9; border-left: 4px solid #009688; padding: 15px; margin-top: 20px; font-style: italic; font-size: 0.9rem; border-radius: 0 8px 8px 0; }
-        .history-title { font-weight: bold; display: block; margin-bottom: 5px; color: #00796b; font-style: normal; }
+        
+        .history-box { display: none; background: #f0f7f4; border-left: 4px solid #004d40; padding: 12px; margin-top: 8px; font-size: 0.9rem; border-radius: 0 8px 8px 0; }
+        .booking-btn { display: inline-block; background: #28a745; color: white; padding: 5px 10px; text-decoration: none; border-radius: 4px; font-size: 0.8rem; margin-top: 10px; margin-right: 5px; }
 
         #map-container { margin-top: 20px; border-radius: 8px; overflow: hidden; border: 1px solid #ccc; height: 350px; display: none; }
         iframe { width: 100%; height: 100%; border: none; }
         
-        .directions-link { display: inline-block; margin-top: 10px; padding: 10px 20px; background: var(--primary); color: white; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        .nav-btn { display: inline-block; margin-top: 10px; padding: 10px 20px; background: var(--primary); color: white; text-decoration: none; border-radius: 5px; font-weight: bold; text-align: center; }
 
-        @media (max-width: 768px) {
-            .container { flex-direction: column; }
-            #details { position: static; }
-        }
+        @media (max-width: 768px) { .container { flex-direction: column; } #details { position: static; } }
     </style>
 </head>
 <body>
 
 <header>
     <h1>Carnival Radiance: Hawaii 2026</h1>
-    <p>April 4th - April 18th | First Island Voyage</p>
+    <p>Shawn & Kim | Juan & Annette | Allen & Pattie</p>
 </header>
 
 <div class="container">
-    <div id="calendar">
-        </div>
-
+    <div id="calendar"></div>
     <div id="details">
         <h2 id="det-date">Select a day</h2>
-        <h3 id="det-loc" style="color: var(--primary);">To see itinerary & maps</h3>
+        <h3 id="det-loc" style="color: var(--primary);">To see itinerary & history</h3>
         <div id="det-act"></div>
         <div id="map-container">
             <iframe id="map-frame" src=""></iframe>
-            <a id="dir-link" class="directions-link" target="_blank">Open GPS Navigation</a>
+            <a id="nav-link" class="nav-btn" target="_blank">Open Navigation in Google Maps</a>
         </div>
     </div>
 </div>
 
 <script>
     const cruiseData = [
-        { 
-            date: "Apr 3", location: "DFW -> Long Beach", type: "port", address: "Long Beach, CA", 
-            activity: "Travel day! Flying from DFW to Long Beach for a pre-cruise hotel stay." 
+        { date: "Apr 3", times: "Hotel Stay", location: "DFW -> Long Beach", type: "port", address: "Long Beach, CA", 
+          activity: `<span class="map-trigger" onclick="toggleHistory('h-travel', 'Long Beach, CA')">Pre-Cruise Stay</span>
+                     <div id="h-travel" class="history-box">Long Beach was originally home to the Tongva people for over 10,000 years. The city rose to prominence in the 20s when the Wilmington Oil Field—one of the largest in the US—was discovered right beneath the harbor.</div>` 
         },
-        { 
-            date: "Apr 4", location: "Long Beach, CA", type: "port", address: "231 Windsor Way, Long Beach, CA 90802", 
-            activity: "Embarkation Day. The ship departs at 4:00 PM. Welcome Aboard!" 
+        { date: "Apr 4", times: "Depart: 4:00 PM", location: "Long Beach Terminal", type: "port", address: "231 Windsor Way, Long Beach, CA 90802", 
+          activity: `<span class="map-trigger" onclick="toggleHistory('h-embark', '231 Windsor Way, Long Beach, CA 90802')">Embarkation Day</span>
+                     <div id="h-embark" class="history-box">The Carnival terminal is famously housed in the former "Spruce Goose" dome, built for Howard Hughes' massive wooden airplane. Right next door is the Queen Mary, which was used as a troopship during WWII, nicknamed the "Grey Ghost" because she was so fast and hard to detect.</div>` 
         },
-        { 
-            date: "Apr 5-8", location: "Pacific Crossing", type: "sea", 
-            activity: "Four relaxing days at sea as we cross the Pacific toward the islands." 
+        { date: "Apr 5-8", times: "At Sea", location: "Pacific Crossing", type: "sea", activity: "Relax and enjoy the ship as we head toward the Hawaiian Islands." },
+        { date: "Apr 9", times: "10:00 AM - 9:30 PM", location: "Kahului (Maui), HI", type: "port", address: "200 Nohea Kai Dr, Lahaina, HI 96761",
+          activity: `<span class="map-trigger" onclick="toggleHistory('h-luau', '200 Nohea Kai Dr, Lahaina, HI 96761')">Drums of the Pacific Lu'au</span>
+                     <div id="h-luau" class="history-box">Located at the Hyatt Regency, this Lu'au celebrates the 1,500-mile journey the Polynesians took across the Pacific using only the stars for navigation. Maui is the second-largest island and is actually made of two separate volcanoes that eventually joined together as they grew.</div>` 
         },
-        { 
-            date: "Apr 9", 
-            location: "Kahului (Maui), HI", 
-            type: "port", 
-            address: "200 Nohea Kai Dr, Lahaina, HI 96761",
-            activity: `
-                <span class="map-trigger" onclick="updateMap('200 Nohea Kai Dr, Lahaina, HI 96761')">Drums of the Pacific Lu'au (Hyatt Regency Maui)</span>
-                Enjoy the longest-running show on the islands with traditional Polynesian dance and fire knives.
-                <div class="history-section">
-                    <span class="history-title">Maui History Fact:</span>
-                    Maui is named after the demigod Maui, who legend says pulled the Hawaiian islands from the sea with a giant fishhook. During your drive to the Lu'au, you'll be traveling through the West Maui mountains, which were formed by a massive shield volcano that collapsed over a million years ago.
-                </div>
-            `
+        { date: "Apr 10", times: "9:00 AM - 10:00 PM", location: "Honolulu (Oahu), HI", type: "port", address: "1 Arizona Memorial Pl, Honolulu, HI 96818",
+          activity: `<strong>11:00 AM Driver Pickup</strong><br>
+                     <span class="map-trigger" onclick="toggleHistory('h-arizona', '1 Arizona Memorial Pl, Honolulu, HI 96818')">1. USS Arizona Memorial (1:45 PM)</span>
+                     <div id="h-arizona" class="history-box">The USS Arizona still leaks roughly 2 to 9 quarts of oil into the harbor every day, often called the "Black Tears of the Arizona." The memorial building is shaped like a bridge to symbolize the connection between the past and future.</div>
+                     <span class="map-trigger" onclick="toggleHistory('h-dole', '64-1550 Kamehameha Hwy, Wahiawa, HI 96786')">2. Dole Plantation & Coffee Farm</span>
+                     <div id="h-dole" class="history-box">The pineapple is actually not native to Hawaii; it likely arrived from South America in the late 1700s. James Dole’s success turned Hawaii into a global agricultural powerhouse, and the North Shore remains one of the few places in the US where coffee is grown commercially.</div>
+                     <span class="map-trigger" onclick="toggleHistory('h-sunset', '89-400 Keaulana Ave, Waianae, HI 96792')">3. Mermaid Caves & Sunset</span>
+                     <div id="h-sunset" class="history-box">The Mermaid Caves are technically "puka" (holes) in the roof of an ancient reef. The Leeward coast is shielded by the Wai’anae Range, some of the oldest mountains on Oahu, creating the perfect dry climate for a beach sunset.</div>` 
         },
-        { 
-            date: "Apr 10", 
-            location: "Honolulu (Oahu), HI", 
-            type: "port", 
-            address: "1 Arizona Memorial Pl, Honolulu, HI 96818",
-            activity: `
-                <strong>Private Driver Pickup: 11:00 AM</strong><br>
-                <span class="map-trigger" onclick="updateMap('1 Arizona Memorial Pl, Honolulu, HI 96818')">1. USS Arizona Memorial (1:45 PM)</span>
-                <span class="map-trigger" onclick="updateMap('64-1550 Kamehameha Hwy, Wahiawa, HI 96786')">2. Dole Plantation & Coffee Farm</span>
-                <span class="map-trigger" onclick="updateMap('89-400 Keaulana Ave, Waianae, HI 96792')">3. Mermaid Caves & Sunset Drinks</span>
-                <div class="history-section">
-                    <span class="history-title">Oahu History Fact:</span>
-                    Oahu is known as 'The Gathering Place.' It is home to 'Iolani Palace, the only royal palace in the United States. Also, keep an eye on the mountains—the dramatic cliffs (Pali) were the site of the Battle of Nu'uanu, where King Kamehameha I finally unified the islands in 1795.
-                </div>
-            `
+        { date: "Apr 11", times: "7:15 AM - 4:00 PM", location: "Nawiliwili (Kauai), HI", type: "port", address: "3-4131 Kuhio Hwy, Lihue, HI 96766",
+          activity: `<span class="map-trigger" onclick="toggleHistory('h-tube', '3-4131 Kuhio Hwy, Lihue, HI 96766')">Kauai Backcountry Tubing Adventure</span>
+                     <div id="h-tube" class="history-box">You are floating through tunnels hand-carved into volcanic rock nearly 150 years ago. Kauai is the "Garden Isle" and the only island with a navigable river. Its volcanic soil is so old it has been weathered into a deep, fertile clay that supports the wettest spot on Earth, Mt. Waialeale.</div>
+                     <a href="https://fareharbor.com/embeds/book/kauaibackcountry/items/1820/booking/53b1e9c4-9fd4-484a-9837-d5c2c9e1929e/" target="_blank" class="booking-btn">View Ticket 1</a>
+                     <a href="https://fareharbor.com/embeds/book/kauaibackcountry/items/1820/booking/290f7230-957c-445e-8503-24be8b7c4861/" target="_blank" class="booking-btn">View Ticket 2</a>` 
         },
-        { 
-            date: "Apr 11", 
-            location: "Nawiliwili (Kauai), HI", 
-            type: "port", 
-            address: "Kanoa Rd, Lihue, HI 96766", 
-            activity: `
-                Arrival 7:15 AM - Departure 4:00 PM.
-                <span class="map-trigger" onclick="updateMap('Wailua Falls, Lihue, HI 96766')">Wailua Falls (Nearby Landmark)</span>
-                <div class="history-section">
-                    <span class="history-title">Kauai History Fact:</span>
-                    Kauai is the oldest of the main islands (over 5 million years old). It's the only island that King Kamehameha never conquered by force; he eventually gained it through a peaceful treaty. Look for the 'Menehune' fishpond—legend says it was built in a single night by a race of mythical small people.
-                </div>
-            `
+        { date: "Apr 12", times: "9:00 AM - 5:00 PM", location: "Hilo (Hawaii), HI", type: "port", address: "80 Kuhio St, Hilo, HI 96720",
+          activity: `<span class="map-trigger" onclick="toggleHistory('h-hilo', 'Rainbow Falls, Hilo, HI 96720')">Rainbow Falls & Hilo Sights</span>
+                     <div id="h-hilo" class="history-box">Hilo is on the "Youngest" island, which is still growing today due to Kilauea. Rainbow Falls is famous for the morning rainbows that appear in the mist, which ancient Hawaiians believed was the spirit of Hina, the moon goddess, watching over her people.</div>` 
         },
-        { 
-            date: "Apr 12", 
-            location: "Hilo (Big Island), HI", 
-            type: "port", 
-            address: "80 Kuhio St, Hilo, HI 96720", 
-            activity: `
-                Arrival 9:00 AM - Departure 5:00 PM.
-                <span class="map-trigger" onclick="updateMap('Rainbow Falls, Hilo, HI 96720')">Rainbow Falls (Nearby Landmark)</span>
-                <div class="history-section">
-                    <span class="history-title">Hilo History Fact:</span>
-                    Hilo is the 'Tsunami Capital of the World.' Because of its bay's shape, it was hit hard in 1946 and 1960. You'll notice much of the downtown area is now parks—this is because the city rebuilt on higher ground and turned the most dangerous spots into beautiful green spaces.
-                </div>
-            `
+        { date: "Apr 13-16", times: "At Sea", location: "Return Crossing", type: "sea", activity: "Sailing back toward Ensenada. A great time to share photos of the trip!" },
+        { date: "Apr 17", times: "3:00 PM - 8:00 PM", location: "Ensenada, Mexico", type: "port", address: "Blvd. Teniente Azueta 110, Ensenada, B.C., Mexico", 
+          activity: `<span class="map-trigger" onclick="toggleHistory('h-ens', 'Blvd. Teniente Azueta 110, Ensenada, B.C., Mexico')">Ensenada Visit</span>
+                     <div id="h-ens" class="history-box">Ensenada means "The Cove." During the 1950s, it became a playground for Hollywood stars like Rita Hayworth and Bing Crosby who visited the Riviera del Pacifico to gamble and escape the spotlight.</div>` 
         },
-        { 
-            date: "Apr 13-16", location: "At Sea", type: "sea", 
-            activity: "Four more days at sea as we head back toward North America." 
-        },
-        { 
-            date: "Apr 17", 
-            location: "Ensenada, Mexico", 
-            type: "port", 
-            address: "Blvd. Teniente Azueta 110, Ensenada, B.C., Mexico", 
-            activity: "Afternoon stop in Mexico. Arrival 3:00 PM - Departure 8:00 PM." 
-        },
-        { 
-            date: "Apr 18", 
-            location: "Long Beach, CA", 
-            type: "port", 
-            address: "231 Windsor Way, Long Beach, CA 90802", 
-            activity: "Disembarkation. Safe travels back to DFW!" 
-        }
+        { date: "Apr 18", times: "Arrive: 8:00 AM", location: "Long Beach, CA", type: "port", address: "231 Windsor Way, Long Beach, CA 90802", activity: "Disembarkation. Safe travels back home!" }
     ];
 
     const calendarEl = document.getElementById('calendar');
@@ -167,7 +113,7 @@
     cruiseData.forEach((day, index) => {
         const card = document.createElement('div');
         card.className = `day-card ${day.type}-day`;
-        card.innerHTML = `<span class="date-label">${day.date}</span><span class="loc-label">${day.location}</span>`;
+        card.innerHTML = `<span class="date-label">${day.date}</span><span class="times-label">${day.times}</span><span class="loc-label">${day.location}</span>`;
         card.onclick = () => showDetails(index);
         calendarEl.appendChild(card);
     });
@@ -177,22 +123,22 @@
         document.getElementById('det-date').innerText = day.date;
         document.getElementById('det-loc').innerText = day.location;
         document.getElementById('det-act').innerHTML = day.activity;
-        
-        if (day.address) {
-            updateMap(day.address);
-        } else {
-            document.getElementById('map-container').style.display = 'none';
-        }
+        if (day.address) { updateMap(day.address); } else { document.getElementById('map-container').style.display = 'none'; }
+        if(window.innerWidth < 768) { document.getElementById('details').scrollIntoView({behavior: "smooth"}); }
+    }
 
-        if(window.innerWidth < 768) {
-            document.getElementById('details').scrollIntoView({behavior: "smooth"});
-        }
+    function toggleHistory(id, address) {
+        const box = document.getElementById(id);
+        const isVisible = box.style.display === "block";
+        document.querySelectorAll('.history-box').forEach(b => b.style.display = 'none');
+        if (!isVisible) { box.style.display = "block"; }
+        updateMap(address);
     }
 
     function updateMap(address) {
-        const encodedAddress = encodeURIComponent(address);
-        document.getElementById('map-frame').src = `https://maps.google.com/maps?q=${encodedAddress}&t=&z=14&ie=UTF8&iwloc=&output=embed`;
-        document.getElementById('dir-link').href = `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`;
+        const encoded = encodeURIComponent(address);
+        document.getElementById('map-frame').src = `https://maps.google.com/maps?q=${encoded}&t=&z=14&ie=UTF8&iwloc=&output=embed`;
+        document.getElementById('nav-link').href = `https://www.google.com/maps/dir/?api=1&destination=${encoded}`;
         document.getElementById('map-container').style.display = 'block';
     }
 </script>
