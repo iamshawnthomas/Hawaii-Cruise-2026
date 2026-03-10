@@ -19,18 +19,21 @@
         .container { display: flex; flex-wrap: wrap; max-width: 1200px; margin: 20px auto; gap: 20px; padding: 0 10px; }
         
         /* Calendar Grid */
-        #calendar { flex: 1; min-width: 300px; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-        .day-card { background: white; border: 1px solid #ddd; padding: 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; position: relative; }
-        .day-card:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        #calendar { flex: 1; min-width: 320px; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+        .day-card { background: white; border: 1px solid #ddd; padding: 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .day-card:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-color: var(--secondary); }
         .day-card.sea-day { background-color: var(--sea); }
         .day-card.port-day { background-color: var(--port); }
         .date-label { font-weight: bold; font-size: 0.9rem; color: var(--primary); }
         .loc-label { display: block; margin-top: 5px; font-size: 0.85rem; }
 
         /* Detail Pane */
-        #details { flex: 1; min-width: 300px; background: white; padding: 25px; border-radius: 8px; border: 1px solid #ddd; position: sticky; top: 20px; height: fit-content; }
-        #map-container { margin-top: 20px; border-radius: 8px; overflow: hidden; border: 1px solid #ccc; height: 300px; display: none; }
+        #details { flex: 1.5; min-width: 350px; background: white; padding: 25px; border-radius: 8px; border: 1px solid #ddd; position: sticky; top: 20px; height: fit-content; line-height: 1.6; }
+        #det-act { font-size: 0.95rem; }
+        #map-container { margin-top: 20px; border-radius: 8px; overflow: hidden; border: 1px solid #ccc; height: 350px; display: none; }
         iframe { width: 100%; height: 100%; border: none; }
+        
+        .alert-box { background: #fff3cd; border-left: 5px solid #ffc107; padding: 10px; margin: 10px 0; font-size: 0.9rem; }
 
         @media (max-width: 768px) {
             .container { flex-direction: column; }
@@ -42,7 +45,7 @@
 
 <header>
     <h1>Carnival Radiance: Hawaii 2026</h1>
-    <p>April 4th - April 18th</p>
+    <p>April 4th - April 18th | Party of 6</p>
 </header>
 
 <div class="container">
@@ -51,8 +54,8 @@
 
     <div id="details">
         <h2 id="det-date">Select a day</h2>
-        <h3 id="det-loc" style="color: var(--primary);">To see itinerary details</h3>
-        <p id="det-act"></p>
+        <h3 id="det-loc" style="color: var(--primary);">To see itinerary & maps</h3>
+        <div id="det-act"></div>
         <div id="map-container">
             <iframe id="map-frame" src=""></iframe>
         </div>
@@ -61,14 +64,37 @@
 
 <script>
     const cruiseData = [
-        { date: "Apr 3", location: "DFW -> Long Beach", activity: "Travel Day & Hotel Stay", type: "port", address: "Long Beach, CA" },
+        { date: "Apr 3", location: "DFW -> Long Beach", activity: "Flight from DFW. Check into hotel.", type: "port", address: "Long Beach, CA" },
         { date: "Apr 4", location: "Long Beach, CA", activity: "Embarkation - Departs 4:00 PM", type: "port", address: "231 Windsor Way, Long Beach, CA 90802" },
         { date: "Apr 5", location: "At Sea", activity: "Pacific Crossing - Fun Day at Sea", type: "sea", address: "" },
         { date: "Apr 6", location: "At Sea", activity: "Pacific Crossing - Fun Day at Sea", type: "sea", address: "" },
         { date: "Apr 7", location: "At Sea", activity: "Pacific Crossing - Fun Day at Sea", type: "sea", address: "" },
         { date: "Apr 8", location: "At Sea", activity: "Pacific Crossing - Fun Day at Sea", type: "sea", address: "" },
-        { date: "Apr 9", location: "Kahului (Maui), HI", activity: "Arrival 10:00 AM - Departure 9:30 PM", type: "port", address: "130 Ala Luina St, Kahului, HI 96732" },
-        { date: "Apr 10", location: "Honolulu, Oahu", activity: "Arrival 9:00 AM - Departure 10:00 PM", type: "port", address: "521 Ala Moana Blvd, Honolulu, HI 96813" },
+        { 
+            date: "Apr 9", 
+            location: "Kahului (Maui), HI", 
+            activity: "Arrival 10:00 AM - Departure 9:30 PM", 
+            type: "port", 
+            address: "130 Ala Luina St, Kahului, HI 96732" 
+        },
+        { 
+            date: "Apr 10", 
+            location: "Honolulu (Oahu), HI", 
+            type: "port", 
+            address: "1 Arizona Memorial Pl, Honolulu, HI 96818",
+            activity: `
+                <strong>Private Driver Pickup: 11:00 AM</strong><br><br>
+                <strong>1. Dole Plantation & Coffee Farm:</strong> Next door to each other. 
+                <div class="alert-box"><strong>Mobility Tip:</strong> Take the 'Pineapple Express' train ride at Dole to see the grounds without walking.</div>
+                <strong>2. USS Arizona Memorial (1:45 PM):</strong> Arrive by 1:15 PM.<br>
+                <em>History:</em> The Memorial marks the resting place of 1,102 sailors killed during the 1941 attack. It is built directly over the sunken hull of the battleship. Very accessible via Navy shuttle boat.<br><br>
+                <strong>3. Waimea Valley Waterfall:</strong> 
+                <div class="alert-box"><strong>Mobility Tip:</strong> Ask for the electric golf cart shuttle at the entrance ($10) to go straight to the falls.</div>
+                <strong>4. Mermaid Caves (Nanakuli):</strong> Sea caves in sharp coral rock.<br>
+                <div class="alert-box"><strong>Caution:</strong> The walk to the caves is over jagged, uneven rock. Recommend those with limited mobility stay with the driver or enjoy the park view.</div>
+                <strong>5. Sunset Drinks:</strong> Head to <strong>Ko Olina Lagoons</strong>. Paved paths, easy access for all, and beautiful views for a party of 6.
+            `
+        },
         { date: "Apr 11", location: "Nawiliwili, Kauai", activity: "Arrival 7:15 AM - Departure 4:00 PM", type: "port", address: "Kanoa Rd, Lihue, HI 96766" },
         { date: "Apr 12", location: "Hilo, Hawaii", activity: "Arrival 9:00 AM - Departure 5:00 PM", type: "port", address: "80 Kuhio St, Hilo, HI 96720" },
         { date: "Apr 13", location: "At Sea", activity: "Return Crossing - Fun Day at Sea", type: "sea", address: "" },
@@ -93,15 +119,21 @@
         const day = cruiseData[index];
         document.getElementById('det-date').innerText = day.date;
         document.getElementById('det-loc').innerText = day.location;
-        document.getElementById('det-act').innerText = day.activity;
+        document.getElementById('det-act').innerHTML = day.activity;
 
         const mapContainer = document.getElementById('map-container');
         if (day.address) {
             const encodedAddress = encodeURIComponent(day.address);
+            // Using a standard embed URL structure
             document.getElementById('map-frame').src = `https://maps.google.com/maps?q=${encodedAddress}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
             mapContainer.style.display = 'block';
         } else {
             mapContainer.style.display = 'none';
+        }
+        
+        // Scroll to details on mobile
+        if(window.innerWidth < 768) {
+            document.getElementById('details').scrollIntoView({behavior: "smooth"});
         }
     }
 </script>
