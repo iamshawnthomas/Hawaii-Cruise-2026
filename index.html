@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hawaii Cruise 2026 Dashboard</title>
+    <style>
+        :root {
+            --primary: #003580; /* Carnival Blue */
+            --secondary: #e4002b; /* Carnival Red */
+            --sea: #e0f2f7;
+            --port: #e8f5e9;
+            --text: #333;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #f4f7f6; color: var(--text); }
+        header { background: var(--primary); color: white; padding: 1rem; text-align: center; border-bottom: 4px solid var(--secondary); }
+        
+        .container { display: flex; flex-wrap: wrap; max-width: 1200px; margin: 20px auto; gap: 20px; padding: 0 10px; }
+        
+        /* Calendar Grid */
+        #calendar { flex: 1; min-width: 300px; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+        .day-card { background: white; border: 1px solid #ddd; padding: 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; position: relative; }
+        .day-card:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .day-card.sea-day { background-color: var(--sea); }
+        .day-card.port-day { background-color: var(--port); }
+        .date-label { font-weight: bold; font-size: 0.9rem; color: var(--primary); }
+        .loc-label { display: block; margin-top: 5px; font-size: 0.85rem; }
+
+        /* Detail Pane */
+        #details { flex: 1; min-width: 300px; background: white; padding: 25px; border-radius: 8px; border: 1px solid #ddd; position: sticky; top: 20px; height: fit-content; }
+        #map-container { margin-top: 20px; border-radius: 8px; overflow: hidden; border: 1px solid #ccc; height: 300px; display: none; }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        @media (max-width: 768px) {
+            .container { flex-direction: column; }
+            #details { position: static; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Carnival Radiance: Hawaii 2026</h1>
+    <p>April 4th - April 18th</p>
+</header>
+
+<div class="container">
+    <div id="calendar">
+        </div>
+
+    <div id="details">
+        <h2 id="det-date">Select a day</h2>
+        <h3 id="det-loc" style="color: var(--primary);">To see itinerary details</h3>
+        <p id="det-act"></p>
+        <div id="map-container">
+            <iframe id="map-frame" src=""></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+    const cruiseData = [
+        { date: "Apr 3", location: "DFW -> Long Beach", activity: "Travel Day & Hotel Stay", type: "port", address: "Long Beach, CA" },
+        { date: "Apr 4", location: "Long Beach, CA", activity: "Embarkation - Departs 4:00 PM", type: "port", address: "231 Windsor Way, Long Beach, CA 90802" },
+        { date: "Apr 5", location: "At Sea", activity: "Pacific Crossing - Fun Day at Sea", type: "sea", address: "" },
+        { date: "Apr 6", location: "At Sea", activity: "Pacific Crossing - Fun Day at Sea", type: "sea", address: "" },
+        { date: "Apr 7", location: "At Sea", activity: "Pacific Crossing - Fun Day at Sea", type: "sea", address: "" },
+        { date: "Apr 8", location: "At Sea", activity: "Pacific Crossing - Fun Day at Sea", type: "sea", address: "" },
+        { date: "Apr 9", location: "Kahului (Maui), HI", activity: "Arrival 10:00 AM - Departure 9:30 PM", type: "port", address: "130 Ala Luina St, Kahului, HI 96732" },
+        { date: "Apr 10", location: "Honolulu, Oahu", activity: "Arrival 9:00 AM - Departure 10:00 PM", type: "port", address: "521 Ala Moana Blvd, Honolulu, HI 96813" },
+        { date: "Apr 11", location: "Nawiliwili, Kauai", activity: "Arrival 7:15 AM - Departure 4:00 PM", type: "port", address: "Kanoa Rd, Lihue, HI 96766" },
+        { date: "Apr 12", location: "Hilo, Hawaii", activity: "Arrival 9:00 AM - Departure 5:00 PM", type: "port", address: "80 Kuhio St, Hilo, HI 96720" },
+        { date: "Apr 13", location: "At Sea", activity: "Return Crossing - Fun Day at Sea", type: "sea", address: "" },
+        { date: "Apr 14", location: "At Sea", activity: "Return Crossing - Fun Day at Sea", type: "sea", address: "" },
+        { date: "Apr 15", location: "At Sea", activity: "Return Crossing - Fun Day at Sea", type: "sea", address: "" },
+        { date: "Apr 16", location: "At Sea", activity: "Return Crossing - Fun Day at Sea", type: "sea", address: "" },
+        { date: "Apr 17", location: "Ensenada, Mexico", activity: "Arrival 3:00 PM - Departure 8:00 PM", type: "port", address: "Blvd. Teniente Azueta 110, Ensenada, B.C., Mexico" },
+        { date: "Apr 18", location: "Long Beach, CA", activity: "Disembarkation - Arrive 8:00 AM", type: "port", address: "231 Windsor Way, Long Beach, CA 90802" }
+    ];
+
+    const calendarEl = document.getElementById('calendar');
+
+    cruiseData.forEach((day, index) => {
+        const card = document.createElement('div');
+        card.className = `day-card ${day.type}-day`;
+        card.innerHTML = `<span class="date-label">${day.date}</span><span class="loc-label">${day.location}</span>`;
+        card.onclick = () => showDetails(index);
+        calendarEl.appendChild(card);
+    });
+
+    function showDetails(index) {
+        const day = cruiseData[index];
+        document.getElementById('det-date').innerText = day.date;
+        document.getElementById('det-loc').innerText = day.location;
+        document.getElementById('det-act').innerText = day.activity;
+
+        const mapContainer = document.getElementById('map-container');
+        if (day.address) {
+            const encodedAddress = encodeURIComponent(day.address);
+            document.getElementById('map-frame').src = `https://maps.google.com/maps?q=${encodedAddress}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
+            mapContainer.style.display = 'block';
+        } else {
+            mapContainer.style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>
