@@ -20,11 +20,10 @@
         #details { flex: 1.5; min-width: 350px; background: white; padding: 25px; border-radius: 8px; border: 1px solid #ddd; position: sticky; top: 20px; height: fit-content; line-height: 1.6; }
         .map-trigger { color: var(--primary); cursor: pointer; text-decoration: underline; display: block; margin-top: 12px; font-weight: bold; font-size: 1.05rem; }
         .map-trigger:hover { color: var(--secondary); }
-        .history-box { display: none; background: #f0f7f4; border-left: 4px solid #004d40; padding: 12px; margin-top: 8px; font-size: 0.9rem; border-radius: 0 8px 8px 0; }
-        .booking-btn { display: inline-block; background: #28a745; color: white; padding: 5px 10px; text-decoration: none; border-radius: 4px; font-size: 0.8rem; margin-top: 10px; margin-right: 5px; }
-        #map-container { margin-top: 20px; border-radius: 8px; overflow: hidden; border: 1px solid #ccc; height: 350px; display: none; }
-        iframe { width: 100%; height: 100%; border: none; }
-        .nav-btn { display: inline-block; margin-top: 10px; padding: 10px 20px; background: var(--primary); color: white; text-decoration: none; border-radius: 5px; font-weight: bold; text-align: center; }
+        .history-box { display: none; background: #f0f7f4; border-left: 4px solid #004d40; padding: 15px; margin-top: 10px; font-size: 0.9rem; border-radius: 0 8px 8px 0; overflow-y: auto; max-height: 400px; }
+        .history-box h4 { margin-top: 0; color: #004d40; border-bottom: 1px solid #c8e6c9; padding-bottom: 5px; }
+        .booking-btn { display: inline-block; background: #28a745; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-size: 0.85rem; margin-top: 10px; margin-right: 5px; font-weight: bold; }
+        .nav-btn { display: inline-block; margin-top: 15px; padding: 12px 24px; background: var(--primary); color: white; text-decoration: none; border-radius: 5px; font-weight: bold; text-align: center; width: 100%; box-sizing: border-box; }
         @media (max-width: 768px) { .container { flex-direction: column; } #details { position: static; } }
     </style>
 </head>
@@ -37,64 +36,58 @@
     <div id="calendar"></div>
     <div id="details">
         <h2 id="det-date">Select a day</h2>
-        <h3 id="det-loc" style="color: var(--primary);">To see itinerary & history</h3>
+        <h3 id="det-loc" style="color: var(--primary);">To see itinerary & 25 Fun Facts</h3>
         <div id="det-act"></div>
-        <div id="map-container">
-            <iframe id="map-frame" src=""></iframe>
+        <div id="map-section" style="display:none; margin-top:20px;">
             <a id="nav-link" class="nav-btn" target="_blank">Open Navigation in Google Maps</a>
         </div>
     </div>
 </div>
 <script>
     const cruiseData = [
-        { date: "Apr 3", times: "Hotel Stay", location: "DFW -> Long Beach", type: "port", address: "Long Beach, CA", 
-          activity: `<span class="map-trigger" onclick="toggleHistory('h-travel', 'Long Beach, CA')">Pre-Cruise Stay</span>
-                     <div id="h-travel" class="history-box">1. Long Beach was once home to the Tongva people for over 10,000 years. 2. The 1933 Long Beach earthquake led to some of the first strict building codes in the US. 3. The city was once the "Navy Capital of the World" during WWII.</div>` 
-        },
-        { date: "Apr 4", times: "Depart: 4:00 PM", location: "Long Beach Terminal", type: "port", address: "231 Windsor Way, Long Beach, CA 90802", 
-          activity: `<span class="map-trigger" onclick="toggleHistory('h-embark', '231 Windsor Way, Long Beach, CA 90802')">Embarkation Day</span>
-                     <div id="h-embark" class="history-box">4. The Queen Mary next door is officially listed on the National Register of Historic Places. 5. The Carnival terminal dome was the filming location for parts of "Batman & Robin."</div>` 
-        },
-        { date: "Apr 5-8", times: "At Sea", location: "Pacific Crossing", type: "sea", activity: "6. The Pacific is the deepest ocean on Earth, containing the Mariana Trench. 7. Early explorers were surprised by how calm this ocean was, naming it 'Pacific' (peaceful)." },
+        { date: "Apr 3", times: "Hotel Stay", location: "DFW -> Long Beach", type: "port", address: "Long Beach, CA", activity: "Travel day and pre-cruise stay." },
+        { date: "Apr 4", times: "Depart: 4:00 PM", location: "Long Beach Terminal", type: "port", address: "231 Windsor Way, Long Beach, CA 90802", activity: "Embarkation Day!" },
+        { date: "Apr 5-8", times: "At Sea", location: "Pacific Crossing", type: "sea", activity: "Relaxing days at sea. Check the Carnival HUB app for ship activities." },
         { date: "Apr 9", times: "10:00 AM - 9:30 PM", location: "Kahului (Maui), HI", type: "port", address: "200 Nohea Kai Dr, Lahaina, HI 96761",
-          activity: `<span class="map-trigger" onclick="toggleHistory('h-luau', '200 Nohea Kai Dr, Lahaina, HI 96761')">Drums of the Pacific Lu'au</span>
-                     <div id="h-luau" class="history-box">8. Maui is the only place in the US where you can find the Silversword plant. 9. Haleakalā volcano makes up 75% of the island. 10. Ancient Hawaiians used Kahului harbor as a major site for surfing and canoe racing.</div>` 
+          activity: `<span class="map-trigger" onclick="toggleHistory('h-maui', '200 Nohea Kai Dr, Lahaina, HI 96761')">Maui Itinerary & 25 Fun Facts</span>
+                     <div id="h-maui" class="history-box"><h4>25 Maui Facts & History</h4>
+                     1. Maui is named after the demigod who pulled the islands from the sea. 2. It is the second-largest Hawaiian island. 3. Lahaina was the capital of the Kingdom of Hawaii from 1820 to 1845. 4. The Banyan tree in Lahaina is one of the largest in the world. 5. Maui’s nickname is "The Valley Isle." 6. Haleakalā means "House of the Sun." 7. Over 10,000 humpback whales migrate to Maui's waters every winter. 8. The Road to Hana has 620 curves and 59 bridges. 9. Maui has over 120 miles of coastline. 10. Honokohau Falls is the tallest waterfall on Maui at 1,119 feet. 11. The island was formed by two shield volcanoes. 12. Maui has 30 miles of white, red, and black sand beaches. 13. The pineapple was once the island's major export. 14. Charles Lindbergh is buried on Maui's east side. 15. The "Iao Needle" is a 1,200-foot natural rock pinnacle. 16. Maui produces more sugar than any other island. 17. The Maui onion is famous for being sweet enough to eat raw. 18. Molokini crater is a world-class snorkeling site. 19. The "Seven Sacred Pools" are actually 24 pools. 20. Surfing was a sport of Hawaiian royalty in Maui. 21. Maui has the highest concentration of endangered species in the US. 22. Kapalua means "arms embracing the sea." 23. Maui was the first island to have a library. 24. The island has its own winery at Ulupalakua. 25. Makawao is a famous "Cowboy Town" on Maui.</div>` 
         },
         { date: "Apr 10", times: "9:00 AM - 10:00 PM", location: "Honolulu (Oahu), HI", type: "port", address: "1 Arizona Memorial Pl, Honolulu, HI 96818",
           activity: `<strong>10:00 AM Driver Pickup</strong><br>
-                     <span class="map-trigger" onclick="toggleHistory('h-dole', '64-1550 Kamehameha Hwy, Wahiawa, HI 96786')">1. Dole Plantation</span>
-                     <div id="h-dole" class="history-box">11. James Dole moved to Hawaii with just $1,200 and a vision for pineapples. 12. The "Dole Whip" was created in 1984 specifically for Disneyland.</div>
-                     <span class="map-trigger" onclick="toggleHistory('h-coffee', '71-101 Kamehameha Hwy, Wahiawa, HI 96786')">2. Green World Coffee Farm</span>
-                     <div id="h-coffee" class="history-box">13. The coffee here is picked by hand to ensure only ripe cherries are selected. 14. Coffee was first brought to Hawaii by a Spanish physician in 1813.</div>
-                     <span class="map-trigger" onclick="toggleHistory('h-shrimp', '458 Keawe St, Honolulu, HI 96813')">3. Giovanni's Shrimp Truck (South Oahu Location)</span>
-                     <div id="h-shrimp" class="history-box">15. Giovanni's was the first ever shrimp truck on the island, starting in 1993.</div>
-                     <span class="map-trigger" onclick="toggleHistory('h-arizona', '1 Arizona Memorial Pl, Honolulu, HI 96818')">4. USS Arizona Memorial (1:45 PM)</span>
-                     <div id="h-arizona" class="history-box">16. The marble wall in the Shrine Room lists names of all the personnel who perished. 17. The USS Missouri, where the war ended, sits just a few hundred yards away.</div>
-                     <span class="map-trigger" onclick="toggleHistory('h-blowhole', '8483 Kalanianaole Hwy, Honolulu, HI 96825')">5. Halona Blowhole</span>
-                     <div id="h-blowhole" class="history-box">18. This was the filming site for the famous beach scene in "From Here to Eternity." 19. Hālona means "lookout" in Hawaiian.</div>
-                     <span class="map-trigger" onclick="toggleHistory('h-sunset', 'Waikiki Beach, HI')">6. Beach with Drinks</span>
-                     <div id="h-sunset" class="history-box">20. Waikiki was once a swampy marshland used for growing taro and rice.</div>` 
+                     1. <span class="map-trigger" onclick="toggleHistory('h-oahu-dole', '64-1550 Kamehameha Hwy, Wahiawa, HI 96786')">Dole Plantation</span>
+                     2. <span class="map-trigger" onclick="toggleHistory('h-oahu-coffee', '71-101 Kamehameha Hwy, Wahiawa, HI 96786')">Green Coffee Farm</span>
+                     3. <span class="map-trigger" onclick="toggleHistory('h-oahu-shrimp', '458 Keawe St, Honolulu, HI 96813')">Shrimp Truck (Giovanni's Kaka'ako)</span>
+                     4. <span class="map-trigger" onclick="toggleHistory('h-oahu-uss', '1 Arizona Memorial Pl, Honolulu, HI 96818')">USS Arizona (1:45 PM)</span>
+                     5. <span class="map-trigger" onclick="toggleHistory('h-oahu-blow', '8483 Kalanianaole Hwy, Honolulu, HI 96825')">Halona Blow Hole</span>
+                     6. <span class="map-trigger" onclick="toggleHistory('h-oahu-beach', 'Waikiki, HI')">Beach with drinks</span>
+                     <div id="h-oahu-facts" class="history-box" style="display:block;"><h4>25 Oahu Facts & History</h4>
+                     1. Oahu's nickname is "The Gathering Place." 2. It is home to Iolani Palace, the only royal palace in the US. 3. Pearl Harbor is named for the pearl oysters that once grew there. 4. Honolulu means "sheltered harbor." 5. Waikiki was once a retreat for Hawaiian royalty. 6. The Aloha Tower was once the tallest building in Hawaii. 7. Oahu has the largest population of the islands. 8. Duke Kahanamoku, the father of modern surfing, lived here. 9. Diamond Head is actually a volcanic tuff cone. 10. The North Shore is the surfing capital of the world. 11. Over 100 movies have been filmed at Kualoa Ranch. 12. "Hawaii Five-O" was filmed entirely on Oahu. 13. Punchbowl Crater is a national cemetery. 14. The USS Arizona Memorial was built in 1962. 15. Oahu was the first island to have a paved road. 16. The Foster Botanical Garden is the oldest in Hawaii. 17. Tantalus Lookout offers the best view of the Honolulu skyline. 18. Nu'uanu Pali is the site of a major 1795 battle. 19. Hawaii’s first post office was in Honolulu. 20. Shave ice was brought to Oahu by Japanese immigrants. 21. The H-3 freeway is the most expensive highway per mile ever built. 22. Oahu has more than 125 beaches. 23. Hanauma Bay is a marine life conservation district. 24. King Kamehameha I united the islands after the Battle of Nu'uanu. 25. The surfing "Triple Crown" is held annually on Oahu.</div>` 
         },
         { date: "Apr 11", times: "7:15 AM - 4:00 PM", location: "Nawiliwili (Kauai), HI", type: "port", address: "3-4131 Kuhio Hwy, Lihue, HI 96766",
           activity: `<strong>Shawn, Kim, Allen, Pattie:</strong> 
-                     <span class="map-trigger" onclick="toggleHistory('h-tube', '3-4131 Kuhio Hwy, Lihue, HI 96766')">Kauai Backcountry Tubing</span>
-                     <div id="h-tube" class="history-box">21. Kauai is the oldest of the main islands, estimated at 5 million years old.</div>
+                     <span class="map-trigger" onclick="toggleHistory('h-kauai-tube', '3-4131 Kuhio Hwy, Lihue, HI 96766')">Tube Adventure</span>
                      <a href="https://fareharbor.com/embeds/book/kauaibackcountry/items/1820/booking/53b1e9c4-9fd4-484a-9837-d5c2c9e1929e/" target="_blank" class="booking-btn">Ticket 1</a>
                      <a href="https://fareharbor.com/embeds/book/kauaibackcountry/items/1820/booking/290f7230-957c-445e-8503-24be8b7c4861/" target="_blank" class="booking-btn">Ticket 2</a><br><br>
                      <strong>Juan & Annette:</strong> 
-                     <span class="map-trigger" onclick="toggleHistory('h-waimea', 'Waimea Canyon, HI')">Waimea Canyon Tour (Carnival Excursion)</span>
-                     <div id="h-waimea" class="history-box">22. Mark Twain allegedly gave it the nickname "The Grand Canyon of the Pacific."</div>` 
+                     <span class="map-trigger" onclick="toggleHistory('h-kauai-canyon', 'Waimea Canyon, HI')">Waimea Canyon Tour (Carnival)</span>
+                     <div id="h-kauai-facts" class="history-box" style="display:block; margin-top:20px;"><h4>25 Kauai Facts & History</h4>
+                     1. Kauai is the oldest Hawaiian island at 5.1 million years. 2. Nickname: "The Garden Isle." 3. Mount Waialeale is one of the wettest spots on Earth. 4. Waimea Canyon is the "Grand Canyon of the Pacific." 5. No building on Kauai can be taller than a palm tree by law. 6. Kauai was the only island not conquered by Kamehameha. 7. The island is famous for its wild chickens. 8. Jurassic Park was filmed in the Na Pali coast valleys. 9. Only 10% of the island is accessible by car. 10. The first sugar plantation in Hawaii was in Koloa. 11. Poipu Beach is home to endangered Monk Seals. 12. Kauai has more miles of hiking trails than any other island. 13. The Spouting Horn is a natural blowhole near Poipu. 14. The Hanalei Pier was built in 1892. 15. Kauai has the only navigable rivers in Hawaii. 16. The Wailua River is sacred to ancient Hawaiians. 17. The "Sleeping Giant" is a famous mountain ridge. 18. Kauai produces more coffee than any other US island. 19. Captain Cook first landed in Hawaii at Waimea, Kauai. 20. The island is the westernmost of the main islands. 21. Lihue is the island's commercial center. 22. The Na Pali coast has cliffs rising 4,000 feet. 23. Kauai has been the setting for over 60 Hollywood films. 24. The Menehune are legendary small people of Kauai. 25. All Kauai beaches are open to the public.</div>` 
         },
         { date: "Apr 12", times: "9:00 AM - 5:00 PM", location: "Hilo (Hawaii), HI", type: "port", address: "80 Kuhio St, Hilo, HI 96720",
-          activity: `<span class="map-trigger" onclick="toggleHistory('h-falls', 'Rainbow Falls, Hilo, HI 96720')">1. Rainbow Falls</span>
-                     <div id="h-falls" class="history-box">23. The Wailuku River, which feeds the falls, is the longest river in Hawaii.</div>
-                     <span class="map-trigger" onclick="toggleHistory('h-volcano', 'Hawaii Volcanoes National Park, HI')">2. Volcano National Park (Hawaii Belt Rd)</span>
-                     <div id="h-volcano" class="history-box">24. The park is a UNESCO World Heritage site and an International Biosphere Reserve.</div>
-                     <span class="map-trigger" onclick="toggleHistory('h-lunch', '126 Keawe St, Hilo, HI 96720')">3. Lunch: Pineapples Island Fresh Cuisine</span>
-                     <span class="map-trigger" onclick="toggleHistory('h-beach', 'Carlsmith Beach Park, Hilo, HI 96720')">4. Carlsmith Beach Park</span>
-                     <div id="h-beach" class="history-box">25. Hilo is known as the "Orchid Capital of the World" due to its lush tropical environment.</div>` 
+          activity: `<strong>Itinerary:</strong><br>
+                     1. <span class="map-trigger" onclick="toggleHistory('h-hilo-falls', 'Rainbow Falls, Hilo, HI 96720')">Rainbow Falls</span>
+                     2. <span class="map-trigger" onclick="toggleHistory('h-hilo-volc', 'Hawaii Volcanoes National Park, HI')">Volcano National Park</span>
+                     3. <span class="map-trigger" onclick="toggleHistory('h-hilo-lunch', '126 Keawe St, Hilo, HI 96720')">Lunch: Pineapples Fresh Cuisine</span>
+                     4. <span class="map-trigger" onclick="toggleHistory('h-hilo-beach', 'Carlsmith Beach Park, Hilo, HI 96720')">Carlsmith Beach Park</span>
+                     <div id="h-big-facts" class="history-box" style="display:block; margin-top:20px;"><h4>25 Big Island (Hilo) Facts</h4>
+                     1. It is twice the size of all other islands combined. 2. It has 10 of the world's 14 climate zones. 3. Mauna Kea is the tallest mountain from base to peak (33,500 ft). 4. Kilauea has been erupting nearly continuously since 1983. 5. Hilo is the wettest city in the US. 6. The Merrie Monarch hula festival is held in Hilo. 7. Big Island grows 100% of US-produced macadamia nuts. 8. King Kamehameha the Great was born on this island. 9. The island is still growing due to lava flows. 10. Punalu'u is one of the most famous black sand beaches. 11. Captain Cook died at Kealakekua Bay. 12. The island has snow-capped mountains and tropical beaches. 13. Kona coffee is only grown on the western slopes. 14. Hilo was hit by major tsunamis in 1946 and 1960. 15. The "Painted Church" features murals from the 1800s. 16. Mauna Loa is the largest active volcano on Earth. 17. The island has green sand beaches made of olivine. 18. Hilo’s Liliʻuokalani Gardens is the largest Japanese garden outside Japan. 19. Hawaii Volcanoes National Park is a World Heritage site. 20. The island has the world's most massive volcano (Mauna Loa). 21. Cattle ranching is a huge industry (Parker Ranch). 22. Hilo was once a major sugar-producing town. 23. You can see the stars better here than almost anywhere on Earth. 24. Ka Lae is the southernmost point in the US. 25. The island has ancient petroglyphs carved in lava.</div>` 
         },
-        { date: "Apr 13-17", times: "At Sea / Mexico", location: "Return Leg", type: "sea", activity: "Final chance to enjoy the sea air as we approach Mexico." },
+        { date: "Apr 17", times: "9:00 AM - 5:00 PM", location: "Ensenada, Mexico", type: "port", address: "Ensenada Cruiseport, Mexico",
+          activity: `<span class="map-trigger" onclick="toggleHistory('h-mex', 'Ensenada, Mexico')">Mexico Itinerary & 25 Fun Facts</span>
+                     <div id="h-mex" class="history-box"><h4>25 Ensenada & Mexico Facts</h4>
+                     1. Ensenada is known as the "Cinderella of the Pacific." 2. The Margarita was reportedly invented here at Hussong’s Cantina. 3. La Bufadora is one of the largest sea blowholes in the world. 4. Ensenada is the only deep-water port in Baja California. 5. Mexico is the most populous Spanish-speaking country. 6. Ensenada is a "City of Knowledge" for its science labs. 7. The region is famous for the Baja 1000 off-road race. 8. Ensenada is the birthplace of the fish taco. 9. Mexico has 34 UNESCO World Heritage sites. 10. The Valle de Guadalupe produces 90% of Mexico's wine. 11. Mexico City is sinking at a rate of 10 inches per year. 12. Ensenada was founded in 1542 by Juan Rodriguez Cabrillo. 13. Mexico is home to the world's smallest volcano (Cuexcomate). 14. The Great Pyramid of Cholula is larger than the Great Pyramid of Giza. 15. Ensenada is a major stop for whale watching. 16. Popcorn was first domesticated in Mexico. 17. Mexico introduced chocolate, corn, and chilies to the world. 18. The city has a massive 150-foot flagpole (Plaza Civica). 19. Ensenada is famous for surfing at Todos Santos Island. 20. Mexico is the crossroads of Spanish and Indigenous cultures. 21. Ensenada’s coastline is over 500 miles long. 22. The Riviera del Pacifico was a glamorous 1930s casino. 23. Mexico has 68 official languages. 24. Chichen Itza is one of the New Seven Wonders of the World. 25. Ensenada is just 70 miles south of the US border.</div>` 
+        },
         { date: "Apr 18", times: "Arrive: 8:00 AM", location: "Long Beach, CA", type: "port", address: "231 Windsor Way, Long Beach, CA 90802", activity: "Disembarkation day." }
     ];
 
@@ -112,22 +105,21 @@
         document.getElementById('det-date').innerText = day.date;
         document.getElementById('det-loc').innerText = day.location;
         document.getElementById('det-act').innerHTML = day.activity;
-        if (day.address) { updateMap(day.address); } else { document.getElementById('map-container').style.display = 'none'; }
+        if (day.address) { 
+            document.getElementById('map-section').style.display = 'block';
+            document.getElementById('nav-link').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(day.address)}`;
+        } else { 
+            document.getElementById('map-section').style.display = 'none'; 
+        }
     }
 
     function toggleHistory(id, address) {
         const box = document.getElementById(id);
         const isVisible = box.style.display === "block";
-        document.querySelectorAll('.history-box').forEach(b => b.style.display = 'none');
-        if (!isVisible) { box.style.display = "block"; }
-        updateMap(address);
-    }
-
-    function updateMap(address) {
-        const encoded = encodeURIComponent(address);
-        document.getElementById('map-frame').src = `https://www.google.com/maps/embed/v1/place?key=REPLACE_WITH_YOUR_KEY&q=${encoded}`;
-        document.getElementById('nav-link').href = `https://www.google.com/maps/dir/?api=1&destination=${encoded}`;
-        document.getElementById('map-container').style.display = 'block';
+        if (isVisible) { box.style.display = "none"; } else { box.style.display = "block"; }
+        if (address) {
+            document.getElementById('nav-link').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+        }
     }
 </script>
 </body>
